@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "profileId": "windows-default-unverified",
+  "description": "Safe baseline profile. No Codex-specific controls are enabled until verified on a real installation.",
+  "verifiedAppVersions": [],
+  "selectors": {}
+}
