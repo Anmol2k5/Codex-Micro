@@ -11,6 +11,7 @@ import {
 import { buildDiagnosticReport } from "../../features/diagnostics/report";
 import { useMicroDeckStore } from "../../state/useMicroDeckStore";
 import { StatusBadge } from "../common/StatusBadge";
+import { AutomationLab } from "./AutomationLab";
 
 function capabilityLabel(name: string): string {
   return name.replace(/^can/, "").replace(/[A-Z]/g, (match) => ` ${match}`).trim();
@@ -184,6 +185,8 @@ export function Dashboard() {
             </p>
           </div>
         </article>
+
+        <AutomationLab />
 
         <article className="panel activity-panel">
           <div className="panel-heading">

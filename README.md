@@ -61,6 +61,19 @@ For the real Windows adapter:
 ./scripts/windows-dev.ps1
 ```
 
+
+## Capture the real Codex accessibility tree
+
+MicroDeck includes an **Automation Lab** for turning accessibility data from your installed Windows app into reviewable selector candidates. With ChatGPT open in Codex mode, run:
+
+```powershell
+./scripts/windows-capture-uia.ps1
+```
+
+This writes `microdeck-uia-snapshot.json` in the current directory. Open the MicroDeck dashboard, import that file in **Automation Lab**, search the captured elements, and map verified controls such as `reviewChanges`, `approve`, `reject`, or `threadRow`. Exported mappings are candidates only until a real action is tested and an observable UI change confirms success.
+
+The capture intentionally stores semantic UI Automation metadata (name, AutomationId, control type, class, supported patterns, and hierarchy) and does not store screen coordinates. Review the JSON before sharing it because accessibility names can contain text currently visible in the target app.
+
 ## Build Windows installers
 
 ```powershell
