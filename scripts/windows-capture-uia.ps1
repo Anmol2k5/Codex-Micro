@@ -160,7 +160,7 @@ if ($null -eq $rootElement) {
     throw "Windows UI Automation did not expose a root element for the detected target window."
 }
 
-Write-Host "Capturing UI Automation tree from $($target.ProcessName) — $($target.MainWindowTitle)"
+Write-Host "Capturing UI Automation tree from $($target.ProcessName) - $($target.MainWindowTitle)"
 Write-Host "MaxDepth=$MaxDepth MaxChildrenPerNode=$MaxChildrenPerNode"
 
 $root = Convert-UiaElement -Element $rootElement -Depth 0
@@ -187,4 +187,4 @@ if ($parent -and -not (Test-Path $parent)) {
 
 $document | ConvertTo-Json -Depth 100 | Set-Content -Path $OutputPath -Encoding UTF8
 Write-Host "Saved sanitized UI Automation snapshot to: $OutputPath"
-Write-Host "Review the JSON before sharing it. MicroDeck truncates text and redacts common user paths/tokens, but accessibility names can still contain app-visible text."
+Write-Host "Review the JSON before sharing it."

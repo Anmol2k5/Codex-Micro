@@ -6,6 +6,7 @@ use crate::core::models::{
 };
 
 #[derive(Debug, Error)]
+#[allow(dead_code)]
 pub enum AutomationError {
     #[error("target application is not running")]
     AppNotRunning,

@@ -53,7 +53,6 @@ pub async fn get_active_thread(
         .map_err(|error| error.to_string())
 }
 
-
 #[tauri::command]
 pub async fn get_reasoning_options(state: State<'_, AppState>) -> Result<Vec<String>, String> {
     state

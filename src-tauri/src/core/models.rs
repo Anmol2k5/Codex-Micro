@@ -39,7 +39,12 @@ pub struct ThreadSummary {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "type", content = "payload", rename_all = "camelCase", rename_all_fields = "camelCase")]
+#[serde(
+    tag = "type",
+    content = "payload",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
 pub enum CodexAction {
     FocusApp,
     NewThread,
@@ -55,7 +60,11 @@ pub enum CodexAction {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "type", rename_all = "camelCase", rename_all_fields = "camelCase")]
+#[serde(
+    tag = "type",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
 pub enum ActionTarget {
     ActiveThread,
     SelectedThread { thread_id: ThreadId },

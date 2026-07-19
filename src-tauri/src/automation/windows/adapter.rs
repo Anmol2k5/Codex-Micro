@@ -12,16 +12,9 @@ use crate::{
 
 use super::TargetAppLocator;
 
+#[derive(Default)]
 pub struct WindowsAutomationAdapter {
     locator: TargetAppLocator,
-}
-
-impl Default for WindowsAutomationAdapter {
-    fn default() -> Self {
-        Self {
-            locator: TargetAppLocator::default(),
-        }
-    }
 }
 
 impl WindowsAutomationAdapter {

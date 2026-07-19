@@ -96,7 +96,12 @@ impl AutomationAdapter for MockAutomationAdapter {
         let started = Instant::now();
 
         if let ActionTarget::SelectedThread { thread_id } = &target {
-            let exists = self.threads.read().await.iter().any(|thread| &thread.id == thread_id);
+            let exists = self
+                .threads
+                .read()
+                .await
+                .iter()
+                .any(|thread| &thread.id == thread_id);
             if !exists {
                 return Ok(Self::result(
                     action,

@@ -4,6 +4,7 @@
 //! controls remain behind UI Automation selectors that must be verified on a real Windows install.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[allow(dead_code)]
 pub struct TargetWindow {
     pub hwnd: isize,
     pub process_id: u32,
@@ -12,6 +13,7 @@ pub struct TargetWindow {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct TargetAppLocator {
     process_candidates: Vec<String>,
     title_candidates: Vec<String>,
@@ -26,6 +28,7 @@ impl Default for TargetAppLocator {
     }
 }
 
+#[allow(dead_code)]
 impl TargetAppLocator {
     pub fn new(process_candidates: Vec<String>) -> Self {
         Self {
@@ -89,7 +92,10 @@ mod windows_impl {
 
     #[link(name = "user32")]
     extern "system" {
-        fn EnumWindows(callback: Option<unsafe extern "system" fn(Hwnd, Lparam) -> Bool>, lparam: Lparam) -> Bool;
+        fn EnumWindows(
+            callback: Option<unsafe extern "system" fn(Hwnd, Lparam) -> Bool>,
+            lparam: Lparam,
+        ) -> Bool;
         fn IsWindowVisible(hwnd: Hwnd) -> Bool;
         fn GetWindowTextLengthW(hwnd: Hwnd) -> i32;
         fn GetWindowTextW(hwnd: Hwnd, text: *mut u16, max_count: i32) -> i32;
@@ -156,7 +162,11 @@ mod windows_impl {
             .iter()
             .any(|candidate| title.to_lowercase().contains(&candidate.to_lowercase()));
 
-        let matches_target = if process_name.is_empty() { title_matches } else { process_matches };
+        let matches_target = if process_name.is_empty() {
+            title_matches
+        } else {
+            process_matches
+        };
 
         if matches_target {
             context.result = Some(TargetWindow {
@@ -220,14 +230,26 @@ mod tests {
     #[test]
     fn default_candidates_cover_current_and_migration_names() {
         let locator = TargetAppLocator::default();
-        assert!(locator.process_candidates().iter().any(|name| name == "ChatGPT.exe"));
-        assert!(locator.process_candidates().iter().any(|name| name == "Codex.exe"));
+        assert!(locator
+            .process_candidates()
+            .iter()
+            .any(|name| name == "ChatGPT.exe"));
+        assert!(locator
+            .process_candidates()
+            .iter()
+            .any(|name| name == "Codex.exe"));
     }
 
     #[test]
     fn default_title_candidates_allow_chatgpt_and_codex_windows() {
         let locator = TargetAppLocator::default();
-        assert!(locator.title_candidates().iter().any(|name| name == "ChatGPT"));
-        assert!(locator.title_candidates().iter().any(|name| name == "Codex"));
+        assert!(locator
+            .title_candidates()
+            .iter()
+            .any(|name| name == "ChatGPT"));
+        assert!(locator
+            .title_candidates()
+            .iter()
+            .any(|name| name == "Codex"));
     }
 }

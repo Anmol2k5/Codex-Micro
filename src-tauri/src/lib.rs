@@ -23,7 +23,7 @@ fn create_automation_adapter() -> Arc<dyn AutomationAdapter> {
 
     #[cfg(windows)]
     {
-        return Arc::new(automation::windows::WindowsAutomationAdapter::default());
+        Arc::new(automation::windows::WindowsAutomationAdapter::default())
     }
 
     #[cfg(not(windows))]
