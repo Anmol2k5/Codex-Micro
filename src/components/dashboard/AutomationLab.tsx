@@ -70,8 +70,9 @@ export function AutomationLab() {
       setProfile(
         createSelectorProfile({
           profileId: `local-${parsed.target.processName.replace(/\.exe$/i, "").toLowerCase()}`,
-          processName: parsed.target.processName,
-          windowTitle: parsed.target.windowTitle,
+          processNames: [parsed.target.processName],
+          windowTitleHints: parsed.target.windowTitle ? [parsed.target.windowTitle] : [],
+          appVersions: parsed.target.processVersion ? [parsed.target.processVersion] : [],
         }),
       );
       setError(null);

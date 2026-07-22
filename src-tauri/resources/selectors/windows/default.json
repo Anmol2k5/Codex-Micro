@@ -1,7 +1,99 @@
 {
   "schemaVersion": 1,
-  "profileId": "windows-default-unverified",
-  "description": "Safe baseline profile. No Codex-specific controls are enabled until verified on a real installation.",
-  "verifiedAppVersions": [],
-  "selectors": {}
+  "profileId": "chatgpt-windows-default",
+  "description": "Verified baseline profile for ChatGPT and Codex modes.",
+  "target": {
+    "processNames": ["ChatGPT.exe", "Codex.exe"],
+    "windowTitleHints": ["ChatGPT", "Codex"],
+    "appVersions": []
+  },
+  "selectors": {
+    "codexModeIndicator": [
+      {
+        "controlType": "ControlType.Document",
+        "names": ["Codex"]
+      }
+    ],
+    "newThread": [
+      {
+        "controlType": "ControlType.Button",
+        "names": ["New chat"]
+      }
+    ],
+    "promptComposer": [
+      {
+        "controlType": "ControlType.Group",
+        "className": "ProseMirror"
+      }
+    ],
+    "sendButton": [
+      {
+        "controlType": "ControlType.Button",
+        "className": "size-token-button-composer"
+      },
+      {
+        "controlType": "ControlType.Button",
+        "className": "bg-token-foreground"
+      }
+    ],
+    "threadList": [
+      {
+        "controlType": "ControlType.List",
+        "className": "flex flex-col"
+      }
+    ],
+    "threadRow": [
+      {
+        "controlType": "ControlType.ListItem",
+        "className": "group/folder-row"
+      },
+      {
+        "controlType": "ControlType.ListItem",
+        "className": "after:block"
+      }
+    ],
+    "reviewChanges": [
+      {
+        "controlType": "ControlType.Button",
+        "names": ["Review changes", "Approve for me", "Approve"]
+      }
+    ],
+    "approve": [
+      {
+        "controlType": "ControlType.Button",
+        "names": ["Approve", "Approve changes"]
+      }
+    ],
+    "reject": [
+      {
+        "controlType": "ControlType.Button",
+        "names": ["Reject", "Reject changes", "Decline"]
+      }
+    ],
+    "discardChanges": [
+      {
+        "controlType": "ControlType.Button",
+        "names": ["Discard changes", "Discard", "Undo changes", "Undo"]
+      }
+    ],
+    "reasoningControl": [
+      {
+        "controlType": "ControlType.Button",
+        "className": "h-token-button-composer",
+        "ancestorHints": ["Composer utility bar"]
+      }
+    ],
+    "reasoningOption": [
+      {
+        "controlType": "ControlType.Button",
+        "className": "cursor-interaction"
+      }
+    ],
+    "approvalPanel": [
+      {
+        "controlType": "ControlType.Group",
+        "className": "approval-panel"
+      }
+    ]
+  }
 }

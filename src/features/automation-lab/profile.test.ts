@@ -30,8 +30,9 @@ describe("selector profiles", () => {
   it("adds semantic mappings without duplicating the same selector", () => {
     const profile = createSelectorProfile({
       profileId: "local-chatgpt",
-      processName: "ChatGPT.exe",
-      windowTitle: "ChatGPT",
+      processNames: ["ChatGPT.exe"],
+      windowTitleHints: ["ChatGPT"],
+      appVersions: [],
     });
     const once = addSelectorMapping(profile, "reviewChanges", buildSelectorCandidate(node));
     const twice = addSelectorMapping(once, "reviewChanges", buildSelectorCandidate(node));

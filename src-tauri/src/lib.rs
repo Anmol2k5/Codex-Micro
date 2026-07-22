@@ -11,6 +11,9 @@ use commands::{
     execute_action, get_active_thread, get_capabilities, get_connection_state,
     get_reasoning_options, list_threads,
 };
+use tauri::menu::{Menu, MenuItem};
+use tauri::tray::TrayIconBuilder;
+use tauri::Manager;
 
 fn create_automation_adapter() -> Arc<dyn AutomationAdapter> {
     let force_mock = std::env::var("MICRODECK_USE_MOCK")
@@ -46,6 +49,39 @@ pub fn run() {
             get_reasoning_options,
             execute_action
         ])
+        .setup(|app| {
+            let show_dashboard = MenuItem::with_id(app, "show_dashboard", "Show Dashboard", true, None::<&str>)?;
+            let show_controller = MenuItem::with_id(app, "show_controller", "Show Controller", true, None::<&str>)?;
+            let exit = MenuItem::with_id(app, "exit", "Exit", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show_dashboard, &show_controller, &exit])?;
+
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .menu(&menu)
+                .on_menu_event(|app, event| {
+                    match event.id.as_ref() {
+                        "show_dashboard" => {
+                            if let Some(w) = app.get_webview_window("main") {
+                                let _ = w.show();
+                                let _ = w.set_focus();
+                            }
+                        }
+                        "show_controller" => {
+                            if let Some(w) = app.get_webview_window("controller") {
+                                let _ = w.show();
+                                let _ = w.set_focus();
+                            }
+                        }
+                        "exit" => {
+                            std::process::exit(0);
+                        }
+                        _ => {}
+                    }
+                })
+                .build(app)?;
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running MicroDeck");
 }

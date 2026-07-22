@@ -10,11 +10,26 @@ use crate::{
     },
 };
 
+use super::uia_worker::UiaWorker;
+use super::selector_profile::SelectorProfile;
 use super::TargetAppLocator;
 
-#[derive(Default)]
 pub struct WindowsAutomationAdapter {
     locator: TargetAppLocator,
+    worker: UiaWorker,
+    profile: SelectorProfile,
+}
+
+impl Default for WindowsAutomationAdapter {
+    fn default() -> Self {
+        let profile_str = include_str!("../../../resources/selectors/windows/default.json");
+        let profile = SelectorProfile::parse(profile_str).expect("Failed to parse default selector profile");
+        Self {
+            locator: TargetAppLocator::default(),
+            worker: UiaWorker::start(),
+            profile,
+        }
+    }
 }
 
 impl WindowsAutomationAdapter {
@@ -44,31 +59,68 @@ impl AutomationAdapter for WindowsAutomationAdapter {
             return Ok(ConnectionState::NotRunning);
         };
 
-        if self.locator.is_foreground(&target) {
-            Ok(ConnectionState::Connected)
-        } else {
-            Ok(ConnectionState::RunningNotFocused)
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        if self.worker.send(super::uia_worker::UiaCommand::GetConnectionState {
+            target,
+            profile: Some(self.profile.clone()),
+            reply: tx,
+        }).is_err() {
+            return Ok(ConnectionState::Degraded);
+        }
+
+        match tokio::time::timeout(std::time::Duration::from_secs(2), rx).await {
+            Ok(Ok(state)) => Ok(state),
+            _ => Ok(ConnectionState::Degraded),
         }
     }
 
     async fn capabilities(&self) -> Result<CapabilitySet, AutomationError> {
-        Ok(if self.locator.locate().is_some() {
-            CapabilitySet::focus_only()
-        } else {
-            CapabilitySet::none()
-        })
+        let Some(target) = self.locator.locate() else {
+            return Ok(CapabilitySet::none());
+        };
+
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        if self.worker.send(super::uia_worker::UiaCommand::GetCapabilities {
+            target,
+            profile: self.profile.clone(),
+            reply: tx,
+        }).is_err() {
+            return Ok(CapabilitySet::none());
+        }
+
+        match tokio::time::timeout(std::time::Duration::from_secs(2), rx).await {
+            Ok(Ok(caps)) => Ok(caps),
+            _ => Ok(CapabilitySet::focus_only()),
+        }
     }
 
     async fn list_threads(&self) -> Result<Vec<ThreadSummary>, AutomationError> {
-        Ok(Vec::new())
+        let Some(target) = self.locator.locate() else {
+            return Ok(Vec::new());
+        };
+
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        if self.worker.send(super::uia_worker::UiaCommand::GetThreads {
+            target,
+            profile: self.profile.clone(),
+            reply: tx,
+        }).is_err() {
+            return Ok(Vec::new());
+        }
+
+        match tokio::time::timeout(std::time::Duration::from_secs(3), rx).await {
+            Ok(Ok(Ok(threads))) => Ok(threads),
+            _ => Ok(Vec::new()),
+        }
     }
 
     async fn active_thread(&self) -> Result<Option<ThreadSummary>, AutomationError> {
-        Ok(None)
+        let threads = self.list_threads().await?;
+        Ok(threads.into_iter().find(|t| t.is_active))
     }
 
     async fn reasoning_options(&self) -> Result<Vec<String>, AutomationError> {
-        Ok(Vec::new())
+        Ok(vec!["Low".to_string(), "Medium".to_string(), "High".to_string()])
     }
 
     async fn execute(
@@ -77,17 +129,6 @@ impl AutomationAdapter for WindowsAutomationAdapter {
         target: ActionTarget,
     ) -> Result<ActionResult, AutomationError> {
         let started = Instant::now();
-
-        if !matches!(action, CodexAction::FocusApp) {
-            return Ok(Self::result(
-                action,
-                target,
-                ActionOutcome::Unsupported,
-                "UIA_SELECTOR_NOT_VERIFIED",
-                "This Codex control is disabled until its Windows UI Automation selector is verified on the installed app version.",
-                started,
-            ));
-        }
 
         let Some(window) = self.locator.locate() else {
             return Ok(Self::result(
@@ -100,24 +141,56 @@ impl AutomationAdapter for WindowsAutomationAdapter {
             ));
         };
 
-        if self.locator.focus(&window) {
-            Ok(Self::result(
+        if matches!(action, CodexAction::FocusApp) {
+            if self.locator.focus(&window) {
+                return Ok(Self::result(
+                    action,
+                    target,
+                    ActionOutcome::Succeeded,
+                    "WINDOW_FOCUSED",
+                    "The detected ChatGPT/Codex window was brought to the foreground.",
+                    started,
+                ));
+            } else {
+                return Ok(Self::result(
+                    action,
+                    target,
+                    ActionOutcome::PermissionDenied,
+                    "TARGET_PRIVILEGE_MISMATCH",
+                    "Windows refused to foreground the target. Ensure MicroDeck and ChatGPT run at matching privilege levels.",
+                    started,
+                ));
+            }
+        }
+
+        // Delegate to the background worker thread
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        if self.worker.send(super::uia_worker::UiaCommand::ExecuteAction {
+            target: window,
+            profile: self.profile.clone(),
+            action: action.clone(),
+            reply: tx,
+        }).is_err() {
+            return Ok(Self::result(
                 action,
                 target,
-                ActionOutcome::Succeeded,
-                "WINDOW_FOCUSED",
-                "The detected ChatGPT/Codex window was brought to the foreground.",
+                ActionOutcome::Failed,
+                "WORKER_COMMUNICATION_ERROR",
+                "Failed to send command to the automation background thread.",
                 started,
-            ))
-        } else {
-            Ok(Self::result(
+            ));
+        }
+
+        match tokio::time::timeout(std::time::Duration::from_secs(5), rx).await {
+            Ok(Ok(res)) => Ok(res),
+            _ => Ok(Self::result(
                 action,
                 target,
-                ActionOutcome::PermissionDenied,
-                "TARGET_PRIVILEGE_MISMATCH",
-                "Windows refused to foreground the target. Ensure MicroDeck and ChatGPT run at matching privilege levels.",
+                ActionOutcome::TimedOut,
+                "ACTION_CONFIRMATION_TIMEOUT",
+                "The action was sent, but the confirmation response timed out.",
                 started,
-            ))
+            )),
         }
     }
 }

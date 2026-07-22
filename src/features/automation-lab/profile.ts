@@ -22,6 +22,8 @@ export interface ElementSelectorCandidate {
   controlType?: string;
   className?: string;
   requiredPatterns?: string[];
+  ancestorHints?: string[];
+  descendantHints?: string[];
 }
 
 export interface SelectorProfile {
@@ -29,8 +31,9 @@ export interface SelectorProfile {
   profileId: string;
   description: string;
   target: {
-    processName: string;
-    windowTitle?: string;
+    processNames: string[];
+    windowTitleHints: string[];
+    appVersions: string[];
   };
   selectors: Partial<Record<SemanticSelectorKey, ElementSelectorCandidate[]>>;
 }
@@ -64,16 +67,18 @@ export function buildSelectorCandidate(node: FlatUiaNode): ElementSelectorCandid
 
 export function createSelectorProfile(input: {
   profileId: string;
-  processName: string;
-  windowTitle?: string;
+  processNames: string[];
+  windowTitleHints: string[];
+  appVersions: string[];
 }): SelectorProfile {
   return {
     schemaVersion: 1,
     profileId: input.profileId,
     description: "Locally captured MicroDeck selector profile. Review before committing or sharing.",
     target: {
-      processName: input.processName,
-      ...(input.windowTitle ? { windowTitle: input.windowTitle } : {}),
+      processNames: input.processNames,
+      windowTitleHints: input.windowTitleHints,
+      appVersions: input.appVersions,
     },
     selectors: {},
   };
