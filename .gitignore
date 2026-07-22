@@ -12,6 +12,6 @@ src-tauri/target/
 coverage/
 
 *.tsbuildinfo
-* . z i p  
+*.zip
 captures/
  

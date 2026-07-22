@@ -1,18 +1,22 @@
-import type { ChangeEvent, CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import {
-  AppWindow,
+  ArrowUp,
   Check,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  CircleX,
+  Cloud,
   FileDiff,
   Focus,
+  GitBranch,
   Mic,
   Minus,
   Plus,
   RotateCcw,
   Settings2,
   Sparkles,
+  XCircle,
+  Zap,
 } from "lucide-react";
 import { bridge } from "../../api/bridge";
 import { pageCount, pageThreads } from "../../features/threads/paging";
@@ -20,7 +24,8 @@ import { actionTargetLabel, deriveActionTarget } from "../../features/threads/ta
 import { useMicroDeckStore } from "../../state/useMicroDeckStore";
 import type { CodexAction } from "../../types/codex";
 import { StatusBadge } from "../common/StatusBadge";
-import { ActionKey } from "./ActionKey";
+import { HardwareKey } from "./HardwareKey";
+import { HardwareKnob } from "./HardwareKnob";
 
 export function FloatingController() {
   const {
@@ -50,7 +55,6 @@ export function FloatingController() {
   const unavailable = (available: boolean, name: string) =>
     available ? undefined : `${name} is not available in the detected Codex UI.`;
 
-  const dialIndex = Math.max(0, reasoningOptions.indexOf(reasoningLevel));
   const shellStyle: CSSProperties = {
     opacity: settings.controllerOpacity,
     transform: `scale(${settings.controllerScale})`,
@@ -58,219 +62,286 @@ export function FloatingController() {
 
   return (
     <section
-      className="microdeck-shell"
+      className="hardware-deck-shell"
       style={shellStyle}
-      aria-label="MicroDeck floating controller"
+      aria-label="CODEX MICRO hardware control deck"
     >
-      <header className="microdeck-header" data-tauri-drag-region>
-        <div data-tauri-drag-region>
-          <p className="eyebrow" data-tauri-drag-region>MICRODECK</p>
-          <StatusBadge status={connectionState} />
+      {/* Top Outer Header */}
+      <header className="deck-outer-header" data-tauri-drag-region>
+        <div className="deck-brand" data-tauri-drag-region>
+          <span className="brand-primary">CODEX</span>
+          <span className="brand-secondary">MICRO</span>
         </div>
-        <div className="header-actions">
+        <div className="deck-outer-actions">
+          <span
+            className={`status-dot status-dot-${connectionState}`}
+            title={`Status: ${connectionState}`}
+          />
           <button
-            className="icon-button"
+            className="deck-icon-btn"
             type="button"
-            aria-label="Open dashboard settings"
-            title="Open settings in the MicroDeck dashboard"
+            aria-label="Open settings dashboard"
+            title="Open settings in MicroDeck dashboard"
             onClick={() => void bridge.showWindow("main")}
           >
-            <Settings2 size={18} />
+            <Settings2 size={19} />
           </button>
           <button
-            className="icon-button"
+            className="deck-icon-btn"
             type="button"
             aria-label="Hide controller"
             title="Hide floating controller"
             onClick={() => void bridge.hideCurrentWindow()}
           >
-            <Minus size={18} />
+            <Minus size={19} />
           </button>
         </div>
       </header>
 
-      <div className="thread-pager-row">
-        <span>Threads</span>
-        <div className="thread-pager-controls">
-          <button
-            type="button"
-            aria-label="Previous thread page"
-            onClick={() => setControllerPage(Math.max(0, controllerPage - 1))}
-            disabled={controllerPage <= 0}
-          >
-            <ChevronLeft size={14} />
-          </button>
-          <span>{Math.min(controllerPage + 1, totalPages)}/{totalPages}</span>
-          <button
-            type="button"
-            aria-label="Next thread page"
-            onClick={() => setControllerPage(Math.min(totalPages - 1, controllerPage + 1))}
-            disabled={controllerPage >= totalPages - 1}
-          >
-            <ChevronRight size={14} />
-          </button>
+      {/* Main Skeuomorphic Acrylic Hardware Enclosure */}
+      <div className="acrylic-casing">
+        {/* Corner Hex Screws */}
+        <div className="corner-screw screw-top-left" />
+        <div className="corner-screw screw-top-right" />
+        <div className="corner-screw screw-bottom-left" />
+        <div className="corner-screw screw-bottom-right" />
+
+        {/* Plate Engravings */}
+        <div className="engraving engraving-left">Work Louder | OpenAI 2026</div>
+        <div className="engraving engraving-top">
+          <ArrowUp size={14} />
         </div>
-      </div>
+        <div className="engraving engraving-right">You can just build things</div>
+        <div className="engraving engraving-bottom">Let's build</div>
 
-      <div className="thread-strip" aria-label="Codex threads">
-        {visibleThreads.length > 0 ? visibleThreads.map((thread, index) => {
-          const selected = thread.id === selectedThreadId;
-          const absoluteIndex = controllerPage * 4 + index + 1;
-          return (
+        {/* Thread Pager Header Bar */}
+        <div className="deck-thread-bar">
+          <div className="thread-target-info" title={targetLabel}>
+            <span className="target-dot" />
+            <span className="target-text">{targetLabel}</span>
+          </div>
+          <div className="thread-pager-mini">
             <button
-              key={thread.id}
               type="button"
-              className={`thread-slot ${selected ? "thread-slot-selected" : ""}`}
-              onClick={() => setSelectedThread(thread.id)}
-              onDoubleClick={() =>
-                run({ type: "selectThread", payload: { threadId: thread.id } })
-              }
-              title={`${thread.title}${thread.project ? ` — ${thread.project}` : ""}`}
+              onClick={() => setControllerPage(Math.max(0, controllerPage - 1))}
+              disabled={controllerPage <= 0}
+              aria-label="Previous page"
             >
-              <span className={`thread-led thread-${thread.status}`} aria-hidden="true" />
-              <span className="thread-number">{absoluteIndex}</span>
-              <span className="thread-title">{thread.title}</span>
-              {thread.isActive ? <span className="active-mark" aria-label="Active thread">A</span> : null}
+              <ChevronLeft size={13} />
             </button>
-          );
-        }) : (
-          <div className="empty-thread-strip">No accessible Codex threads detected yet.</div>
-        )}
-      </div>
-
-      <div className="target-row">
-        <span className="target-label" title={targetLabel}>{targetLabel}</span>
-        <label className="toggle-label">
-          <input
-            type="checkbox"
-            checked={followActive}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => setFollowActive(event.target.checked)}
-          />
-          <span>Follow active</span>
-        </label>
-      </div>
-
-      <div className="controller-grid">
-        <div className="action-grid">
-          <ActionKey
-            label="Focus Codex"
-            icon={<Focus size={27} />}
-            disabled={!capabilities.canFocusApp}
-            busy={busyAction === "focusApp"}
-            title={unavailable(capabilities.canFocusApp, "Focus Codex")}
-            onClick={() => run({ type: "focusApp" })}
-          />
-          <ActionKey
-            label="Review"
-            icon={<FileDiff size={27} />}
-            disabled={!capabilities.canReviewChanges}
-            busy={busyAction === "reviewChanges"}
-            title={unavailable(capabilities.canReviewChanges, "Review")}
-            onClick={() => run({ type: "reviewChanges" })}
-          />
-          <ActionKey
-            label="Approve"
-            icon={<Check size={29} />}
-            tone="positive"
-            disabled={!capabilities.canApprove}
-            busy={busyAction === "approve"}
-            title={unavailable(capabilities.canApprove, "Approve")}
-            onClick={() => run({ type: "approve" })}
-          />
-          <ActionKey
-            label="Reject"
-            icon={<CircleX size={27} />}
-            tone="danger"
-            disabled={!capabilities.canReject}
-            busy={busyAction === "reject"}
-            title={unavailable(capabilities.canReject, "Reject")}
-            onClick={() => run({ type: "reject" })}
-          />
-          <ActionKey
-            label="New thread"
-            icon={<Plus size={29} />}
-            disabled={!capabilities.canCreateThread}
-            busy={busyAction === "newThread"}
-            title={unavailable(capabilities.canCreateThread, "New thread")}
-            onClick={() => run({ type: "newThread" })}
-          />
-          <ActionKey
-            label="Switch"
-            icon={<AppWindow size={26} />}
-            disabled={!capabilities.canSelectThread || !selectedThreadId}
-            busy={busyAction === "selectThread"}
-            title={unavailable(capabilities.canSelectThread, "Thread switching")}
-            onClick={() => {
-              if (selectedThreadId) run({ type: "selectThread", payload: { threadId: selectedThreadId } });
-            }}
-          />
-          <ActionKey
-            label="Voice"
-            icon={<Mic size={26} />}
-            disabled={!capabilities.canStartSystemDictation}
-            busy={busyAction === "startSystemDictation"}
-            title={unavailable(capabilities.canStartSystemDictation, "Voice dictation")}
-            onClick={() => run({ type: "startSystemDictation" })}
-          />
-          <ActionKey
-            label="Discard"
-            icon={<RotateCcw size={26} />}
-            disabled={!capabilities.canDiscardChanges}
-            busy={busyAction === "discardChanges"}
-            title={unavailable(capabilities.canDiscardChanges, "Discard changes")}
-            onClick={() => {
-              const shouldRun = !settings.confirmDiscardChanges || window.confirm(
-                "Discard changes in the targeted Codex thread? This may permanently remove work.",
-              );
-              if (shouldRun) run({ type: "discardChanges" });
-            }}
-          />
-        </div>
-
-        <div className="reasoning-panel">
-          <div className="dial-wrap">
+            <span>{Math.min(controllerPage + 1, Math.max(1, totalPages))}/{Math.max(1, totalPages)}</span>
             <button
               type="button"
-              className="dial-step"
-              aria-label="Previous reasoning level"
-              onClick={() => {
-                const next = reasoningOptions[Math.max(0, dialIndex - 1)];
-                if (next) void setReasoningLevel(next);
-              }}
-              disabled={!capabilities.canSetReasoningLevel || dialIndex <= 0}
+              onClick={() => setControllerPage(Math.min(totalPages - 1, controllerPage + 1))}
+              disabled={controllerPage >= totalPages - 1}
+              aria-label="Next page"
             >
-              <ChevronLeft size={18} />
-            </button>
-            <div className="reasoning-dial" aria-label={`Reasoning ${reasoningLevel}`}>
-              <Sparkles size={24} />
-              <span>{reasoningOptions.length > 0 ? reasoningLevel : "N/A"}</span>
-            </div>
-            <button
-              type="button"
-              className="dial-step"
-              aria-label="Next reasoning level"
-              onClick={() => {
-                const next = reasoningOptions[Math.min(reasoningOptions.length - 1, dialIndex + 1)];
-                if (next) void setReasoningLevel(next);
-              }}
-              disabled={
-                !capabilities.canSetReasoningLevel ||
-                reasoningOptions.length === 0 ||
-                dialIndex >= reasoningOptions.length - 1
-              }
-            >
-              <ChevronRight size={18} />
+              <ChevronRight size={13} />
             </button>
           </div>
-          <span className="reasoning-caption">Reasoning</span>
+        </div>
+
+        {/* Hardware Control Matrix */}
+        <div className="deck-grid">
+          {/* Row 1 */}
+          <div className="grid-cell">
+            <HardwareKnob
+              level={reasoningLevel}
+              options={reasoningOptions.length > 0 ? reasoningOptions : ["Low", "Medium", "High", "Extra"]}
+              onChange={(lvl) => void setReasoningLevel(lvl)}
+              disabled={!capabilities.canSetReasoningLevel}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              label="Thread 1"
+              badge={visibleThreads[0] ? 1 : undefined}
+              active={visibleThreads[0]?.id === selectedThreadId}
+              disabled={!visibleThreads[0]}
+              title={visibleThreads[0] ? visibleThreads[0].title : "Empty thread slot"}
+              onClick={() => {
+                if (visibleThreads[0]) setSelectedThread(visibleThreads[0].id);
+              }}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              label="Thread 2"
+              badge={visibleThreads[1] ? 2 : undefined}
+              active={visibleThreads[1]?.id === selectedThreadId}
+              disabled={!visibleThreads[1]}
+              title={visibleThreads[1] ? visibleThreads[1].title : "Empty thread slot"}
+              onClick={() => {
+                if (visibleThreads[1]) setSelectedThread(visibleThreads[1].id);
+              }}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="dashed"
+              icon={<CheckCircle2 size={20} />}
+              label="Toggle Mode"
+              title="Dashed toggle & trackball key"
+              active={followActive}
+              onClick={() => setFollowActive(!followActive)}
+            />
+          </div>
+
+          {/* Row 2: Thread slots */}
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              badge={visibleThreads[2] ? 3 : undefined}
+              active={visibleThreads[2]?.id === selectedThreadId}
+              disabled={!visibleThreads[2]}
+              title={visibleThreads[2] ? visibleThreads[2].title : "Empty thread slot"}
+              onClick={() => {
+                if (visibleThreads[2]) setSelectedThread(visibleThreads[2].id);
+              }}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              badge={visibleThreads[3] ? 4 : undefined}
+              active={visibleThreads[3]?.id === selectedThreadId}
+              disabled={!visibleThreads[3]}
+              title={visibleThreads[3] ? visibleThreads[3].title : "Empty thread slot"}
+              onClick={() => {
+                if (visibleThreads[3]) setSelectedThread(visibleThreads[3].id);
+              }}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              label="New"
+              disabled={!capabilities.canCreateThread}
+              busy={busyAction === "newThread"}
+              title={unavailable(capabilities.canCreateThread, "New thread")}
+              onClick={() => run({ type: "newThread" })}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="translucent"
+              icon={<Plus size={18} />}
+              label="Review"
+              disabled={!capabilities.canReviewChanges}
+              busy={busyAction === "reviewChanges"}
+              title={unavailable(capabilities.canReviewChanges, "Review changes")}
+              onClick={() => run({ type: "reviewChanges" })}
+            />
+          </div>
+
+          {/* Row 3: Solid Tactile Action Keys */}
+          <div className="grid-cell">
+            <HardwareKey
+              variant="solid"
+              icon={<Zap size={22} />}
+              label="Focus Codex"
+              disabled={!capabilities.canFocusApp}
+              busy={busyAction === "focusApp"}
+              title={unavailable(capabilities.canFocusApp, "Focus Codex")}
+              onClick={() => run({ type: "focusApp" })}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="solid"
+              tone="positive"
+              icon={<Check size={24} />}
+              label="Approve"
+              disabled={!capabilities.canApprove}
+              busy={busyAction === "approve"}
+              title={unavailable(capabilities.canApprove, "Approve")}
+              onClick={() => run({ type: "approve" })}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="solid"
+              tone="danger"
+              icon={<XCircle size={22} />}
+              label="Reject"
+              disabled={!capabilities.canReject}
+              busy={busyAction === "reject"}
+              title={unavailable(capabilities.canReject, "Reject")}
+              onClick={() => run({ type: "reject" })}
+            />
+          </div>
+
+          <div className="grid-cell">
+            <HardwareKey
+              variant="solid"
+              icon={<GitBranch size={22} />}
+              label="Switch / Branch"
+              disabled={!capabilities.canSelectThread}
+              busy={busyAction === "selectThread"}
+              title={unavailable(capabilities.canSelectThread, "Switch thread")}
+              onClick={() => {
+                if (selectedThreadId) run({ type: "selectThread", payload: { threadId: selectedThreadId } });
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Row 4: Bottom Special Controls */}
+        <div className="deck-bottom-row">
+          {/* LED Indicators & Black Knob */}
+          <div className="deck-led-cluster" title="System LED status indicators">
+            <div className="led-bars">
+              <span className="led-bar led-gold" />
+              <span className="led-bar led-orange" />
+              <span className="led-bar led-green" />
+            </div>
+            <div className="black-trackball" />
+          </div>
+
+          {/* Center Wide Dictation Key */}
+          <div className="deck-pill-cell">
+            <HardwareKey
+              variant="pill"
+              icon={<Mic size={24} />}
+              label="Voice Dictation"
+              disabled={!capabilities.canStartSystemDictation}
+              busy={busyAction === "startSystemDictation"}
+              title={unavailable(capabilities.canStartSystemDictation, "Voice dictation")}
+              onClick={() => run({ type: "startSystemDictation" })}
+            />
+          </div>
+
+          {/* Right Thought Cloud Key */}
+          <div className="deck-thought-cell">
+            <HardwareKey
+              variant="thought"
+              icon={<Cloud size={24} />}
+              label="Reasoning Detail"
+              disabled={!capabilities.canSetReasoningLevel}
+              title="Toggle reasoning detail level"
+              onClick={() => {
+                const next = reasoningOptions[(reasoningOptions.indexOf(reasoningLevel) + 1) % reasoningOptions.length] || "Medium";
+                void setReasoningLevel(next);
+              }}
+            />
+          </div>
         </div>
       </div>
-
-      <footer className="microdeck-footer">
-        <span>Unofficial companion for Codex</span>
-        <span className="footer-dot">•</span>
-        <span>Local-first</span>
-      </footer>
     </section>
   );
 }

@@ -254,3 +254,473 @@ html[data-reduced-motion="true"] *::after {
   .uia-node-list { max-height: 320px; }
   .uia-node-row { grid-template-columns: minmax(0,1fr); gap: 4px; }
 }
+
+/* CODEX MICRO Work Louder Industrial Hardware Control Deck Styling --------- */
+.hardware-deck-shell {
+  width: 440px;
+  max-width: calc(100vw - 16px);
+  padding: 14px 16px 18px;
+  border-radius: 36px;
+  background: #ebeae5;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0,0,0,0.06);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  user-select: none;
+}
+
+.deck-outer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px 12px;
+}
+
+.deck-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.brand-primary {
+  font-size: 18px;
+  color: #1a1c18;
+  letter-spacing: 0.05em;
+}
+
+.brand-secondary {
+  font-size: 13px;
+  font-family: monospace;
+  color: #8c9087;
+  letter-spacing: 0.12em;
+}
+
+.deck-outer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deck-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.7);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #4a4d46;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.deck-icon-btn:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+
+/* Skeuomorphic Acrylic Casing */
+.acrylic-casing {
+  position: relative;
+  border-radius: 28px;
+  padding: 22px 20px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(226,225,220,0.92) 100%);
+  border: 1.5px solid rgba(255,255,255,0.95);
+  box-shadow: 
+    inset 0 1px 2px rgba(255,255,255,1),
+    inset 0 -2px 4px rgba(0,0,0,0.06),
+    0 16px 36px rgba(0,0,0,0.12);
+  backdrop-filter: blur(20px);
+}
+
+/* Corner Screws */
+.corner-screw {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #555752, #1d1f1c);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corner-screw::after {
+  content: "";
+  width: 8px;
+  height: 2px;
+  background: #0f100e;
+  box-shadow: 0 0 1px rgba(255,255,255,0.2);
+  transform: rotate(45deg);
+}
+
+.screw-top-left { top: 12px; left: 12px; }
+.screw-top-right { top: 12px; right: 12px; }
+.screw-bottom-left { bottom: 12px; left: 12px; }
+.screw-bottom-right { bottom: 12px; right: 12px; }
+
+/* Side Plate Engravings */
+.engraving {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 700;
+  color: #7b7e76;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+.engraving-left {
+  left: -28px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  white-space: nowrap;
+}
+
+.engraving-right {
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  white-space: nowrap;
+}
+
+.engraving-top {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #2a2c28;
+}
+
+.engraving-bottom {
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #585c54;
+}
+
+/* Thread Pager Header Bar */
+.deck-thread-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+
+.thread-target-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #43463f;
+}
+
+.target-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #39b54a;
+  box-shadow: 0 0 6px rgba(57,181,74,0.6);
+}
+
+.target-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thread-pager-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #63675e;
+}
+
+.thread-pager-mini button {
+  width: 22px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.7);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.thread-pager-mini button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Hardware Control Matrix */
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.grid-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rotary Metallic Dial Knob Component */
+.hardware-knob-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  position: relative;
+}
+
+.hardware-knob-container.knob-dragging {
+  cursor: grabbing;
+}
+
+.knob-outer-ring {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #e4e3de, #b8b7b1);
+  box-shadow: 
+    0 6px 12px rgba(0,0,0,0.18),
+    inset 0 1px 2px rgba(255,255,255,0.9);
+}
+
+.knob-cap {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fafafa, #bebcb4 80%);
+  border: 1px solid rgba(0,0,0,0.12);
+  position: relative;
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+  display: flex;
+  justify-content: center;
+}
+
+.knob-indicator-line {
+  position: absolute;
+  top: 6px;
+  width: 4px;
+  height: 22px;
+  border-radius: 3px;
+  background: #2b2e29;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+}
+
+.knob-value-badge {
+  position: absolute;
+  bottom: -4px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #3b3e37;
+  background: rgba(255,255,255,0.85);
+  padding: 1px 5px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* 3D Physical Mechanical Keycaps */
+.hardware-key {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.hardware-key:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.key-cap {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  padding: 4px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.hardware-key:not(:disabled):active .key-cap {
+  transform: translateY(3px);
+}
+
+/* Key Variants */
+/* 1. Translucent Keycap */
+.key-variant-translucent .key-cap {
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(215,214,208,0.7));
+  border: 1.5px solid rgba(255,255,255,0.9);
+  box-shadow: 
+    0 6px 12px rgba(0,0,0,0.1),
+    inset 0 1px 2px rgba(255,255,255,1),
+    inset 0 -2px 4px rgba(0,0,0,0.05);
+}
+
+.key-variant-translucent .key-surface {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  background: radial-gradient(circle at 40% 30%, rgba(138,154,216,0.35), rgba(120,135,195,0.15));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #50619e;
+  position: relative;
+}
+
+/* 2. Dashed Border Keycap */
+.key-variant-dashed .key-cap {
+  border: 2px dashed #3a3d36;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.4);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+}
+
+.key-variant-dashed .key-surface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d1f1c;
+}
+
+/* 3. Solid White Tactile Keycap */
+.key-variant-solid .key-cap {
+  background: linear-gradient(145deg, #ffffff, #e3e2dc);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 
+    0 7px 14px rgba(0,0,0,0.12),
+    inset 0 1px 1px rgba(255,255,255,1),
+    inset 0 -3px 0 rgba(0,0,0,0.08);
+}
+
+.key-variant-solid .key-surface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e201c;
+}
+
+.key-tone-positive .key-surface { color: #1e702e; }
+.key-tone-danger .key-surface { color: #b02a24; }
+
+.key-badge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #50619e;
+}
+
+/* Bottom Special Controls Row */
+.deck-bottom-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 68px;
+  gap: 12px;
+  align-items: center;
+}
+
+/* LED Indicators Cluster */
+.deck-led-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+}
+
+.led-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.led-bar {
+  width: 14px;
+  height: 5px;
+  border-radius: 2px;
+  background: #999c94;
+}
+
+.led-gold { background: #e0ab34; box-shadow: 0 0 5px rgba(224,171,52,0.8); }
+.led-orange { background: #d9742b; box-shadow: 0 0 5px rgba(217,116,43,0.8); }
+.led-green { background: #3eb456; box-shadow: 0 0 5px rgba(62,180,86,0.8); }
+
+.black-trackball {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #444641, #121311);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+/* Wide Pill Key */
+.deck-pill-cell {
+  height: 58px;
+}
+
+.key-variant-pill {
+  width: 100%;
+  height: 100%;
+}
+
+.key-variant-pill .key-cap {
+  border-radius: 24px;
+  background: linear-gradient(145deg, #ffffff, #e6e5df);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 7px 14px rgba(0,0,0,0.12), inset 0 1px 1px #fff;
+}
+
+.key-variant-pill .key-surface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #1e201c;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* Thought Cloud Key */
+.deck-thought-cell {
+  height: 58px;
+}
+
+.key-variant-thought .key-cap {
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff, #e1e0da);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 7px 14px rgba(0,0,0,0.12);
+}
+
+.key-variant-thought .key-surface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e201c;
+}
+
